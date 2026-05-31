@@ -1,0 +1,12 @@
+let score = 75;
+
+if(score > 89) {
+    print "A";
+} elif(score > 74) {
+    print "B";
+} elif(score > 59) {
+    print "C";
+} else {
+    print "F";
+}
+// prints: B

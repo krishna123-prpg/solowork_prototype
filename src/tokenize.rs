@@ -263,6 +263,19 @@ impl<'a> Lexer<'a> {
         let s: String = (&self.input[start..end]).iter().collect();
         Some(s)
     }
+    fn skip_comment(&mut self) {
+        let current_line_no=self.line_no;
+        if self.expect_str("//") == false{
+            return;
+        }
+        while let Some(_c) = self.current(){
+            if current_line_no+1 == self.line_no{
+                break;
+            }
+            self.advance();
+        }
+    }
+        
     fn identifier_to_token(identifier: &str) -> TokenKind {
         match identifier {
             "let" => TokenKind::Let,
@@ -294,11 +307,11 @@ impl<'a> Lexer<'a> {
             Some(character) => character,
         };
         let mut is_advance_required = true;
+        let mut is_comment = false;
         match c {
             '+' => tok.kind = TokenKind::Plus,
             '-' => tok.kind = TokenKind::Minus,
             '*' => tok.kind = TokenKind::Star,
-            '/' => tok.kind = TokenKind::Slash,
             '%' => tok.kind = TokenKind::Percent,
             '(' => tok.kind = TokenKind::LParen,
             ')' => tok.kind = TokenKind::RParen,
@@ -308,6 +321,17 @@ impl<'a> Lexer<'a> {
             '>' => tok.kind = TokenKind::Greater,
             ';' => tok.kind = TokenKind::Semicolon,
             ',' => tok.kind = TokenKind::Comma,
+            '/' => match self.peek(){ 
+                Some(n) => {
+                    if n == '/' {
+                        self.skip_comment();
+                        is_comment = true;
+                    }else{
+                        tok.kind = TokenKind::Slash
+                    }
+                },
+                None => tok.kind = TokenKind::Slash,
+            },
             '=' => match self.peek() {
                 Some(n) => {
                     if n == '=' {
@@ -349,8 +373,8 @@ impl<'a> Lexer<'a> {
                 }
             }
         }
-        if tok.kind == TokenKind::ILLEGAL {
-            is_advance_required = false;
+        if is_comment == true {
+            return self.next_token();
         }
         if is_advance_required == true {
             self.advance();

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Language Reference</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13161e;
+    --bg3: #1a1e28;
+    --border: #272b38;
+    --text: #c9d1e0;
+    --muted: #6b7591;
+    --accent: #5f8fff;
+    --accent2: #4fd6c8;
+    --accent3: #f7b84b;
+    --accent4: #ff6b8a;
+    --keyword: #c792ea;
+    --string: #a5e089;
+    --number: #f78c6c;
+    --comment: #546e7a;
+    --op: #89ddff;
+    --ident: #82aaff;
+    --type: #ffcb6b;
+    --radius: 6px;
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Layout */
+  .shell { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 2rem 0;
+  }
+
+  .sidebar-logo {
+    padding: 0 1.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+  .sidebar-logo .lang-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.08em;
+  }
+  .sidebar-logo .lang-sub {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-top: 3px;
+  }
+
+  .nav-section {
+    padding: 0.25rem 0 0.5rem;
+  }
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0.25rem 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .nav-item {
+    display: block;
+    padding: 0.35rem 1.5rem;
+    font-size: 13.5px;
+    color: var(--text);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .nav-item:hover {
+    background: var(--bg3);
+    color: #fff;
+    border-left-color: var(--accent);
+  }
+  .nav-item.active {
+    background: var(--bg3);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  /* Content */
+  .content {
+    flex: 1;
+    min-width: 0;
+    padding: 3rem 4rem;
+    max-width: 860px;
+  }
+
+  .page-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .page-header p {
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  section {
+    margin-bottom: 3.5rem;
+    scroll-margin-top: 2rem;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent2);
+    margin: 1.5rem 0 0.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.02em;
+  }
+
+  p { margin-bottom: 0.85rem; color: var(--text); }
+  p:last-child { margin-bottom: 0; }
+
+  ul, ol {
+    padding-left: 1.5rem;
+    margin-bottom: 0.85rem;
+  }
+  li { margin-bottom: 0.3rem; }
+
+  /* Code blocks */
+  pre {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    position: relative;
+  }
+  pre code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text);
+    background: none;
+    padding: 0;
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent2);
+  }
+
+  /* Syntax highlighting */
+  .kw   { color: var(--keyword); }
+  .str  { color: var(--string); }
+  .num  { color: var(--number); }
+  .cmt  { color: var(--comment); font-style: italic; }
+  .op   { color: var(--op); }
+  .id   { color: var(--ident); }
+  .ty   { color: var(--type); }
+  .pn   { color: var(--text); }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 14px;
+  }
+  th {
+    text-align: left;
+    padding: 0.6rem 1rem;
+    background: var(--bg3);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg3); }
+  td code { font-size: 12.5px; }
+
+  /* Callout boxes */
+  .callout {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+    margin: 1.25rem 0;
+    font-size: 14px;
+    line-height: 1.6;
+    border-left: 3px solid;
+  }
+  .callout-note   { background: rgba(95, 143, 255, 0.08); border-color: var(--accent); }
+  .callout-warn   { background: rgba(247, 184, 75, 0.08); border-color: var(--accent3); }
+  .callout-danger { background: rgba(255, 107, 138, 0.08); border-color: var(--accent4); }
+  .callout-label  { font-weight: 600; white-space: nowrap; padding-top: 1px; }
+  .callout-note   .callout-label { color: var(--accent); }
+  .callout-warn   .callout-label { color: var(--accent3); }
+  .callout-danger .callout-label { color: var(--accent4); }
+
+  /* Grammar notation */
+  .grammar {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    line-height: 2;
+    margin: 1rem 0;
+    color: #a0b0cc;
+  }
+  .grammar .rule  { color: var(--accent2); }
+  .grammar .lit   { color: var(--string); }
+  .grammar .opt   { color: var(--muted); }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 3px;
+    vertical-align: middle;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-left: 0.5rem;
+  }
+  .badge-mut   { background: rgba(79, 214, 200, 0.12); color: var(--accent2); }
+  .badge-imm   { background: rgba(95, 143, 255, 0.12); color: var(--accent); }
+  .badge-todo  { background: rgba(247, 184, 75, 0.12);  color: var(--accent3); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- Sidebar -->
+<nav class="sidebar" aria-label="Documentation navigation">
+  <div class="sidebar-logo">
+    <div class="lang-name">SOLOWORK</div>
+    <div class="lang-sub">Language Reference v0.1</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Getting Started</div>
+    <a class="nav-item" href="#overview">Overview</a>
+    <a class="nav-item" href="#quickstart">Quick start</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Language</div>
+    <a class="nav-item" href="#types">Types</a>
+    <a class="nav-item" href="#variables">Variables</a>
+    <a class="nav-item" href="#expressions">Expressions</a>
+    <a class="nav-item" href="#operators">Operators</a>
+    <a class="nav-item" href="#statements">Statements</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Control Flow</div>
+    <a class="nav-item" href="#if">if / elif / else</a>
+    <a class="nav-item" href="#while">while</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">I/O</div>
+    <a class="nav-item" href="#print">print</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Reference</div>
+    <a class="nav-item" href="#keywords">Keywords</a>
+    <a class="nav-item" href="#grammar">Grammar</a>
+    <a class="nav-item" href="#errors">Error messages</a>
+  </div>
+</nav>
+
+<!-- Main content -->
+<main class="content">
+
+  <div class="page-header">
+    <h1>Language Reference</h1>
+    <p>A statically-typed, interpreted scripting language with Rust/C-inspired syntax.</p>
+  </div>
+
+  <!-- Overview -->
+  <section id="overview">
+    <h2>Overview</h2>
+    <p>
+      This language is a lightweight scripting language with syntax inspired by Rust and C.
+      It features immutable-by-default variables, explicit mutability, integer and string
+      types, arithmetic and comparison expressions, and structured control flow.
+    </p>
+    <p>
+      The interpreter runs in two passes: a <strong>tokenizer</strong> (lexer) that converts
+      source text into a flat token stream, and an <strong>interpreter</strong> that walks
+      that stream and evaluates statements directly — no AST is constructed.
+    </p>
+    <p>Every statement must end with a semicolon <code>;</code>. Blocks are delimited by curly braces <code>{ }</code>.</p>
+  </section>
+
+  <!-- Quick start -->
+  <section id="quickstart">
+    <h2>Quick start</h2>
+    <pre><code><span class="cmt">// Declare variables</span>
+<span class="kw">let</span> <span class="id">x</span> <span class="op">=</span> <span class="num">10</span><span class="pn">;</span>
+<span class="kw">let</span> <span class="kw">mut</span> <span class="id">count</span> <span class="op">=</span> <span class="num">0</span><span class="pn">;</span>
+<span class="kw">let</span> <span class="id">greeting</span> <span class="op">=</span> <span class="str">"hello"</span><span class="pn">;</span>
+
+<span class="cmt">// Arithmetic</span>
+<span class="kw">let</span> <span class="id">result</span> <span class="op">=</span> <span class="id">x</span> <span class="op">*</span> <span class="num">2</span> <span class="op">+</span> <span class="num">5</span><span class="pn">;</span>
+
+<span class="cmt">// Print</span>
+<span class="kw">print</span> <span class="id">greeting</span><span class="pn">;</span>
+<span class="kw">print</span> <span class="id">result</span><span class="pn">;</span>
+
+<span class="cmt">// While loop</span>
+<span class="kw">while</span><span class="pn">(</span><span class="id">count</span> <span class="op">!=</span> <span class="num">3</span><span class="pn">) {</span>
+    <span class="id">count</span> <span class="op">=</span> <span class="id">count</span> <span class="op">+</span> <span class="num">1</span><span class="pn">;</span>
+    <span class="kw">print</span> <span class="id">count</span><span class="pn">;</span>
+<span class="pn">}</span>
+
+<span class="cmt">// Conditional</span>
+<span class="kw">if</span><span class="pn">(</span><span class="id">result</span> <span class="op">></span> <span class="num">20</span><span class="pn">) {</span>
+    <span class="kw">print</span> <span class="str">"big"</span><span class="pn">;</span>
+<span class="pn">}</span> <span class="kw">else</span> <span class="pn">{</span>
+    <span class="kw">print</span> <span class="str">"small"</span><span class="pn">;</span>
+<span class="pn">}</span></code></pre>
+  </section>
+
+  <!-- Types -->
+  <section id="types">
+    <h2>Types</h2>
+    <p>There are three value types. Types are inferred from the initializer — there is no explicit type annotation syntax yet.</p>
+    <table>
+      <thead><tr><th>Type</th><th>Description</th><th>Example literals</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code class="ty">integer</code></td>
+          <td>64-bit signed integer</td>
+          <td><code>0</code>, <code>42</code>, <code>-7</code></td>
+        </tr>
+        <tr>
+          <td><code class="ty">string</code></td>
+          <td>UTF-8 text, delimited by double quotes. Supports <code>\"</code> escape.</td>
+          <td><code>"hello"</code>, <code>"line\"break"</code></td>
+        </tr>
+        <tr>
+          <td><code class="ty">bool</code></td>
+          <td>Result of comparisons. Not a first-class literal yet.</td>
+          <td>produced by <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-note">
+      <span class="callout-label">Note</span>
+      <span>Mixing types in arithmetic (e.g. integer + string) is a runtime error. String + string concatenation is supported with <code>+</code>.</span>
+    </div>
+  </section>
+
+  <!-- Variables -->
+  <section id="variables">
+    <h2>Variables</h2>
+    <p>Variables are declared with <code>let</code>. By default they are <strong>immutable</strong>. Add <code>mut</code> to allow reassignment.</p>
+
+    <h3>Declaration</h3>
+    <pre><code><span class="kw">let</span> <span class="id">name</span> <span class="op">=</span> <span class="id">expr</span><span class="pn">;</span>         <span class="cmt">// immutable</span>
+<span class="kw">let</span> <span class="kw">mut</span> <span class="id">name</span> <span class="op">=</span> <span class="id">expr</span><span class="pn">;</span>     <span class="cmt">// mutable</span></code></pre>
+
+    <h3>Assignment (mutation)</h3>
+    <pre><code><span class="id">name</span> <span class="op">=</span> <span class="id">expr</span><span class="pn">;</span>              <span class="cmt">// only valid if declared with mut</span></code></pre>
+
+    <div class="callout callout-danger">
+      <span class="callout-label">Error</span>
+      <span>Assigning to an immutable variable is a compile-time error. Declaring the same name twice replaces the previous binding.</span>
+    </div>
+
+    <h3>Scope</h3>
+    <p>All variables share a single flat scope — there is no block scoping yet. A variable declared inside a <code>while</code> or <code>if</code> block is visible after the block exits.</p>
+
+    <h3>Examples</h3>
+    <pre><code><span class="kw">let</span> <span class="id">a</span> <span class="op">=</span> <span class="num">5</span><span class="pn">;</span>
+<span class="kw">let</span> <span class="id">b</span> <span class="op">=</span> <span class="num">6</span><span class="pn">;</span>
+<span class="kw">let</span> <span class="kw">mut</span> <span class="id">sum</span> <span class="op">=</span> <span class="id">a</span> <span class="op">+</span> <span class="id">b</span><span class="pn">;</span>
+<span class="id">sum</span> <span class="op">=</span> <span class="id">sum</span> <span class="op">*</span> <span class="num">2</span><span class="pn">;</span>
+
+<span class="kw">let</span> <span class="id">msg</span> <span class="op">=</span> <span class="str">"total: "</span><span class="pn">;</span>
+<span class="kw">print</span> <span class="id">msg</span> <span class="id">sum</span><span class="pn">;</span></code></pre>
+  </section>
+
+  <!-- Expressions -->
+  <section id="expressions">
+    <h2>Expressions</h2>
+    <p>Expressions evaluate to a value. Any expression can be used as the initializer in <code>let</code>, the condition in <code>if</code>/<code>while</code>, or the argument to <code>print</code>.</p>
+
+    <h3>Precedence (highest to lowest)</h3>
+    <table>
+      <thead><tr><th>Level</th><th>Operators</th><th>Associativity</th></tr></thead>
+      <tbody>
+        <tr><td>1 — primary</td><td>literals, identifiers, <code>( expr )</code></td><td>n/a</td></tr>
+        <tr><td>2 — unary</td><td><code>-</code> &nbsp;<code>!</code></td><td>right</td></tr>
+        <tr><td>3 — multiply</td><td><code>*</code> &nbsp;<code>/</code> &nbsp;<code>%</code></td><td>left</td></tr>
+        <tr><td>4 — add</td><td><code>+</code> &nbsp;<code>-</code></td><td>left</td></tr>
+        <tr><td>5 — compare</td><td><code>==</code> &nbsp;<code>!=</code> &nbsp;<code>&lt;</code> &nbsp;<code>&gt;</code></td><td>left</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Examples</h3>
+    <pre><code><span class="kw">let</span> <span class="id">a</span> <span class="op">=</span> <span class="num">2</span> <span class="op">+</span> <span class="num">3</span> <span class="op">*</span> <span class="num">4</span><span class="pn">;</span>       <span class="cmt">// 14  (multiply before add)</span>
+<span class="kw">let</span> <span class="id">b</span> <span class="op">=</span> <span class="pn">(</span><span class="num">2</span> <span class="op">+</span> <span class="num">3</span><span class="pn">)</span> <span class="op">*</span> <span class="num">4</span><span class="pn">;</span>      <span class="cmt">// 20  (parens override)</span>
+<span class="kw">let</span> <span class="id">c</span> <span class="op">=</span> <span class="op">-</span><span class="id">a</span> <span class="op">+</span> <span class="num">1</span><span class="pn">;</span>            <span class="cmt">// -13</span>
+<span class="kw">let</span> <span class="id">ok</span> <span class="op">=</span> <span class="id">a</span> <span class="op">==</span> <span class="num">14</span><span class="pn">;</span>          <span class="cmt">// true (bool)</span>
+<span class="kw">let</span> <span class="id">s</span> <span class="op">=</span> <span class="str">"hello"</span> <span class="op">+</span> <span class="str">" world"</span><span class="pn">;</span> <span class="cmt">// "hello world"</span></code></pre>
+  </section>
+
+  <!-- Operators -->
+  <section id="operators">
+    <h2>Operators</h2>
+
+    <h3>Arithmetic</h3>
+    <table>
+      <thead><tr><th>Op</th><th>Name</th><th>Operands</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td><code>+</code></td><td>Add / Concat</td><td>int+int or str+str</td><td>int or str</td></tr>
+        <tr><td><code>-</code></td><td>Subtract</td><td>int, int</td><td>int</td></tr>
+        <tr><td><code>*</code></td><td>Multiply</td><td>int, int</td><td>int</td></tr>
+        <tr><td><code>/</code></td><td>Divide</td><td>int, int (≠0)</td><td>int (truncated)</td></tr>
+        <tr><td><code>%</code></td><td>Modulo</td><td>int, int (≠0)</td><td>int</td></tr>
+        <tr><td><code>-x</code></td><td>Negate</td><td>int</td><td>int</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Comparison</h3>
+    <table>
+      <thead><tr><th>Op</th><th>Name</th><th>Operands</th></tr></thead>
+      <tbody>
+        <tr><td><code>==</code></td><td>Equal</td><td>int, str, or bool</td></tr>
+        <tr><td><code>!=</code></td><td>Not equal</td><td>int, str, or bool</td></tr>
+        <tr><td><code>&lt;</code></td><td>Less than</td><td>int only</td></tr>
+        <tr><td><code>&gt;</code></td><td>Greater than</td><td>int only</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Logical</h3>
+    <table>
+      <thead><tr><th>Op</th><th>Name</th><th>Operands</th></tr></thead>
+      <tbody>
+        <tr><td><code>!</code></td><td>Logical NOT</td><td>bool</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-note">
+      <span class="callout-label">Note</span>
+      <span>Logical <code>&amp;&amp;</code> and <code>||</code> are not yet implemented. Combine comparisons by nesting <code>if</code>/<code>elif</code> statements.</span>
+    </div>
+  </section>
+
+  <!-- Statements -->
+  <section id="statements">
+    <h2>Statements</h2>
+    <p>All statements at the top level or inside a block are terminated by <code>;</code> (except blocks themselves, which end with <code>}</code>).</p>
+    <table>
+      <thead><tr><th>Statement</th><th>Syntax</th></tr></thead>
+      <tbody>
+        <tr><td>Variable declaration</td><td><code>let [mut] name = expr ;</code></td></tr>
+        <tr><td>Variable assignment</td><td><code>name = expr ;</code></td></tr>
+        <tr><td>Print</td><td><code>print expr [expr …] ;</code></td></tr>
+        <tr><td>Conditional</td><td><code>if ( expr ) { … } [elif ( expr ) { … }]* [else { … }]</code></td></tr>
+        <tr><td>Loop</td><td><code>while ( expr ) { … }</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- If -->
+  <section id="if">
+    <h2>if / elif / else</h2>
+    <p>Conditional execution. The condition must be a <code>bool</code> or <code>integer</code> (0 is false, any other value is true). Parentheses around the condition are required.</p>
+
+    <pre><code><span class="kw">if</span><span class="pn">(</span><span class="id">condition</span><span class="pn">) {</span>
+    <span class="cmt">// taken when condition is true (or non-zero)</span>
+<span class="pn">}</span> <span class="kw">elif</span><span class="pn">(</span><span class="id">other</span><span class="pn">) {</span>
+    <span class="cmt">// taken when first was false and this is true</span>
+<span class="pn">}</span> <span class="kw">else</span> <span class="pn">{</span>
+    <span class="cmt">// taken when all prior conditions were false</span>
+<span class="pn">}</span></code></pre>
+
+    <h3>Example — grade classifier</h3>
+    <pre><code><span class="kw">let</span> <span class="id">score</span> <span class="op">=</span> <span class="num">75</span><span class="pn">;</span>
+
+<span class="kw">if</span><span class="pn">(</span><span class="id">score</span> <span class="op">></span> <span class="num">89</span><span class="pn">) {</span>
+    <span class="kw">print</span> <span class="str">"A"</span><span class="pn">;</span>
+<span class="pn">}</span> <span class="kw">elif</span><span class="pn">(</span><span class="id">score</span> <span class="op">></span> <span class="num">74</span><span class="pn">) {</span>
+    <span class="kw">print</span> <span class="str">"B"</span><span class="pn">;</span>
+<span class="pn">}</span> <span class="kw">elif</span><span class="pn">(</span><span class="id">score</span> <span class="op">></span> <span class="num">59</span><span class="pn">) {</span>
+    <span class="kw">print</span> <span class="str">"C"</span><span class="pn">;</span>
+<span class="pn">}</span> <span class="kw">else</span> <span class="pn">{</span>
+    <span class="kw">print</span> <span class="str">"F"</span><span class="pn">;</span>
+<span class="pn">}</span>
+<span class="cmt">// prints: B</span></code></pre>
+
+    <div class="callout callout-note">
+      <span class="callout-label">Note</span>
+      <span>Only the first matching branch is executed. Once a branch is taken, all remaining <code>elif</code>/<code>else</code> branches are skipped.</span>
+    </div>
+  </section>
+
+  <!-- While -->
+  <section id="while">
+    <h2>while</h2>
+    <p>Repeats its body as long as the condition is true. The condition is re-evaluated before each iteration. Parentheses around the condition are required.</p>
+
+    <pre><code><span class="kw">while</span><span class="pn">(</span><span class="id">condition</span><span class="pn">) {</span>
+    <span class="cmt">// body — repeated while condition is truthy</span>
+<span class="pn">}</span></code></pre>
+
+    <h3>Example — countdown</h3>
+    <pre><code><span class="kw">let</span> <span class="kw">mut</span> <span class="id">i</span> <span class="op">=</span> <span class="num">5</span><span class="pn">;</span>
+<span class="kw">while</span><span class="pn">(</span><span class="id">i</span> <span class="op">></span> <span class="num">0</span><span class="pn">) {</span>
+    <span class="kw">print</span> <span class="id">i</span><span class="pn">;</span>
+    <span class="id">i</span> <span class="op">=</span> <span class="id">i</span> <span class="op">-</span> <span class="num">1</span><span class="pn">;</span>
+<span class="pn">}</span>
+<span class="cmt">// prints: 5  4  3  2  1</span></code></pre>
+
+    <h3>Example — accumulator</h3>
+    <pre><code><span class="kw">let</span> <span class="id">a</span> <span class="op">=</span> <span class="num">5</span><span class="pn">;</span>
+<span class="kw">let</span> <span class="id">b</span> <span class="op">=</span> <span class="num">6</span><span class="pn">;</span>
+<span class="kw">let</span> <span class="kw">mut</span> <span class="id">i</span> <span class="op">=</span> <span class="num">0</span><span class="pn">;</span>
+
+<span class="kw">while</span><span class="pn">(</span><span class="id">i</span> <span class="op">==</span> <span class="num">0</span><span class="pn">) {</span>
+    <span class="kw">let</span> <span class="id">c</span> <span class="op">=</span> <span class="id">a</span> <span class="op">+</span> <span class="id">b</span><span class="pn">;</span>
+    <span class="kw">print</span> <span class="id">c</span><span class="pn">;</span>
+    <span class="id">i</span> <span class="op">=</span> <span class="num">1</span><span class="pn">;</span>   <span class="cmt">// break the loop next iteration</span>
+<span class="pn">}</span></code></pre>
+
+    <div class="callout callout-warn">
+      <span class="callout-label">Warning</span>
+      <span>There is no <code>break</code> statement yet. To exit a loop, ensure the condition evaluates to false. An always-true condition will loop forever.</span>
+    </div>
+  </section>
+
+  <!-- Print -->
+  <section id="print">
+    <h2>print</h2>
+    <p>
+      Evaluates one or more expressions and writes their string representation to standard output,
+      followed by a newline. Multiple values are printed adjacent (no separator).
+    </p>
+
+    <pre><code><span class="kw">print</span> <span class="id">expr</span><span class="pn">;</span>
+<span class="kw">print</span> <span class="id">expr1</span> <span class="id">expr2</span> <span class="id">expr3</span><span class="pn">;</span>
+<span class="kw">print</span> <span class="id">expr1</span><span class="pn">,</span> <span class="id">expr2</span><span class="pn">;</span>   <span class="cmt">// commas are optional separators</span></code></pre>
+
+    <h3>Examples</h3>
+    <pre><code><span class="kw">let</span> <span class="id">name</span> <span class="op">=</span> <span class="str">"world"</span><span class="pn">;</span>
+<span class="kw">let</span> <span class="id">n</span>    <span class="op">=</span> <span class="num">42</span><span class="pn">;</span>
+
+<span class="kw">print</span> <span class="str">"hello world"</span><span class="pn">;</span>          <span class="cmt">// hello world</span>
+<span class="kw">print</span> <span class="str">"n = "</span> <span class="id">n</span><span class="pn">;</span>              <span class="cmt">// n = 42</span>
+<span class="kw">print</span> <span class="num">1</span> <span class="op">+</span> <span class="num">2</span><span class="pn">;</span>                  <span class="cmt">// 3</span>
+<span class="kw">print</span> <span class="str">"a="</span> <span class="num">1</span><span class="pn">,</span> <span class="str">" b="</span> <span class="num">2</span><span class="pn">;</span>        <span class="cmt">// a=1 b=2</span></code></pre>
+  </section>
+
+  <!-- Keywords -->
+  <section id="keywords">
+    <h2>Keywords</h2>
+    <table>
+      <thead><tr><th>Keyword</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code class="kw">let</code></td><td>Declare a new variable</td></tr>
+        <tr><td><code class="kw">mut</code></td><td>Mark a variable as mutable (used with <code>let</code>)</td></tr>
+        <tr><td><code class="kw">if</code></td><td>Conditional branch</td></tr>
+        <tr><td><code class="kw">elif</code></td><td>Additional conditional branch</td></tr>
+        <tr><td><code class="kw">else</code></td><td>Fallback branch</td></tr>
+        <tr><td><code class="kw">while</code></td><td>Conditional loop</td></tr>
+        <tr><td><code class="kw">print</code></td><td>Write values to stdout</td></tr>
+      </tbody>
+    </table>
+    <p>Keywords cannot be used as variable names.</p>
+  </section>
+
+  <!-- Grammar -->
+  <section id="grammar">
+    <h2>Formal grammar</h2>
+    <p>EBNF notation. <code>*</code> = zero or more, <code>?</code> = optional, <code>|</code> = alternative.</p>
+    <div class="grammar">
+<span class="rule">program</span>     → <span class="rule">statement</span>* EOF<br>
+<br>
+<span class="rule">statement</span>   → <span class="rule">let_stmt</span><br>
+            | <span class="rule">assign_stmt</span><br>
+            | <span class="rule">print_stmt</span><br>
+            | <span class="rule">if_stmt</span><br>
+            | <span class="rule">while_stmt</span><br>
+<br>
+<span class="rule">let_stmt</span>    → <span class="lit">"let"</span> <span class="lit">"mut"</span>? IDENT <span class="lit">"="</span> <span class="rule">expr</span> <span class="lit">";"</span><br>
+<span class="rule">assign_stmt</span> → IDENT <span class="lit">"="</span> <span class="rule">expr</span> <span class="lit">";"</span><br>
+<span class="rule">print_stmt</span>  → <span class="lit">"print"</span> (<span class="rule">expr</span> <span class="lit">","</span>?)+ <span class="lit">";"</span><br>
+<br>
+<span class="rule">if_stmt</span>     → <span class="lit">"if"</span> <span class="lit">"("</span> <span class="rule">expr</span> <span class="lit">")"</span> <span class="rule">block</span><br>
+              (<span class="lit">"elif"</span> <span class="lit">"("</span> <span class="rule">expr</span> <span class="lit">")"</span> <span class="rule">block</span>)*<br>
+              (<span class="lit">"else"</span> <span class="rule">block</span>)?<br>
+<br>
+<span class="rule">while_stmt</span>  → <span class="lit">"while"</span> <span class="lit">"("</span> <span class="rule">expr</span> <span class="lit">")"</span> <span class="rule">block</span><br>
+<br>
+<span class="rule">block</span>       → <span class="lit">"{"</span> <span class="rule">statement</span>* <span class="lit">"}"</span><br>
+<br>
+<span class="rule">expr</span>        → <span class="rule">comparison</span><br>
+<span class="rule">comparison</span>  → <span class="rule">addition</span> ((<span class="lit">"=="</span> | <span class="lit">"!="</span> | <span class="lit">"&lt;"</span> | <span class="lit">"&gt;"</span>) <span class="rule">addition</span>)*<br>
+<span class="rule">addition</span>    → <span class="rule">multiply</span>  ((<span class="lit">"+"</span>  | <span class="lit">"-"</span>) <span class="rule">multiply</span>)*<br>
+<span class="rule">multiply</span>    → <span class="rule">unary</span>     ((<span class="lit">"*"</span>  | <span class="lit">"/"</span> | <span class="lit">"%"</span>) <span class="rule">unary</span>)*<br>
+<span class="rule">unary</span>       → (<span class="lit">"-"</span> | <span class="lit">"!"</span>) <span class="rule">unary</span> | <span class="rule">primary</span><br>
+<span class="rule">primary</span>     → INTEGER | STRING | IDENT | <span class="lit">"("</span> <span class="rule">expr</span> <span class="lit">")"</span>
+    </div>
+  </section>
+
+  <!-- Errors -->
+  <section id="errors">
+    <h2>Error messages</h2>
+    <p>All errors are reported to stderr in the format:</p>
+    <pre><code>[error] FILENAME:LINE:COL -> message
+        source line text here</code></pre>
+    <p>For source strings (not files), the filename is shown as <code>[No File]</code>. The interpreter exits with code 1 on the first error encountered.</p>
+
+    <table>
+      <thead><tr><th>Message</th><th>Cause</th></tr></thead>
+      <tbody>
+        <tr><td><code>undefined variable 'x'</code></td><td>Reading a variable that hasn't been declared</td></tr>
+        <tr><td><code>cannot assign to immutable variable 'x'</code></td><td>Writing to a variable declared without <code>mut</code></td></tr>
+        <tr><td><code>division by zero</code></td><td><code>/</code> or <code>%</code> with a zero right-hand side</td></tr>
+        <tr><td><code>type mismatch in comparison</code></td><td>Comparing values of different types</td></tr>
+        <tr><td><code>arithmetic requires integer operands</code></td><td><code>*</code>, <code>/</code>, <code>%</code> applied to non-integers</td></tr>
+        <tr><td><code>expected ";" but found …</code></td><td>Missing semicolon at end of statement</td></tr>
+        <tr><td><code>unexpected token … at statement level</code></td><td>Token that cannot start a statement</td></tr>
+        <tr><td><code>unterminated block</code></td><td>Opening <code>{</code> with no matching <code>}</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+</div>
+
+<script>
+  // Highlight active nav item based on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  function updateActive() {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY + 120 >= sec.offsetTop) current = sec.id;
+    });
+    navItems.forEach(item => {
+      item.classList.toggle('active', item.getAttribute('href') === '#' + current);
+    });
+  }
+
+  document.querySelector('.content').addEventListener('scroll', function() {
+    let current = '';
+    sections.forEach(sec => {
+      if (this.scrollTop + 120 >= sec.offsetTop) current = sec.id;
+    });
+    navItems.forEach(item => {
+      item.classList.toggle('active', item.getAttribute('href') === '#' + current);
+    });
+  });
+
+  navItems.forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(item.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
