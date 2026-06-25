@@ -1,6 +1,8 @@
 # solowork
-
 A lightweight, interpreted scripting language with syntax inspired by Rust and C. Written in Rust.
+
+## new people
+Those who are using windows or new(or unaware) to linux or this kind of reading, you don't need to look down. Just search AI "how to download .zip of a github repo" and do that same thing for this project. Extract the .zip file.Just go to **examples** folder present inside it. There you will find many files. Open *docs.html* to learn my language and later watch *solowork.mp4* video which demonstrate how to use it. There are some example programs. Run it as shown in the video. Edit it if you want. **You don't need to read everything present in docs.html as it may be pointless to you. Such pointless and difficult things are only for advance users.** That's all. **I strongly recommed that you learn a language like python before reading docs.html as it may make this docs easier to read and understand.** Don't scroll down more as you may not understand what is written down.
 
 ```
 let a = 5;
